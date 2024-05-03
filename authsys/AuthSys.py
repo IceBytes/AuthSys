@@ -12,6 +12,7 @@ import sys
 import traceback
 import warnings
 from subprocess import check_output
+from typing import Dict, Optional
 
 try:  # Python 3
     from subprocess import DEVNULL  # type: ignore
@@ -644,31 +645,85 @@ def _fetch_ip_using_dns():
     return ip
 
 class AuthSys():
-    def __init__(self):
-        self.main_api = "http://188.34.187.210"
-        self.mac = str(get_mac_address())
+    def __init__(self) -> None:
+        self.main_api: str = "http://authsys.catway.org"
+        self.mac: str = str(get_mac_address())
 
-    def _send_request(self, endpoint: str, params: dict) -> dict:
-        req = requests.get(f"{self.main_api}/{endpoint}", params=params).text
-        response = json.loads(req)
+    def _send_request(self, endpoint: str, params: Dict[str, str]) -> Dict[str, str]:
+        """
+        Send a request to the API endpoint.
+
+        Args:
+            endpoint: The API endpoint to send the request to.
+            params: A dictionary containing the request parameters.
+
+        Returns:
+            A dictionary containing the API response.
+        """
+        req: str = requests.get(f"{self.main_api}/{endpoint}", params=params, timeout=10).text
+        response: Dict[str, str] = json.loads(req)
         return response
 
-    def login(self, key: str, access_token: str) -> dict:
-        params = {"key": key, "access_token": access_token, "mac": self.mac}
+    def login(self, key: str, access_token: str) -> Dict[str, str]:
+        """
+        Log in with the provided key and access token.
+
+        Args:
+            key: The user's key.
+            access_token: The user's access token.
+
+        Returns:
+            A dictionary containing the API response.
+        """
+        params: Dict[str, str] = {"key": key, "access_token": access_token, "mac": self.mac}
         return self._send_request("login", params)
 
-    def register(self, time: str) -> dict:
-        params = {"time": time}
+    def register(self, time: str) -> Dict[str, str]:
+        """
+        Register a new user with the provided time.
+
+        Args:
+            time: The registration time.
+
+        Returns:
+            A dictionary containing the API response.
+        """
+        params: Dict[str, str] = {"time": time}
         return self._send_request("register", params)
 
-    def remove(self, key: str, secret_auth: str) -> dict:
-        params = {"key": key, "auth": secret_auth}
+    def remove(self, key: str, secret_auth: str) -> Dict[str, str]:
+        """
+        Remove a user with the provided key and secret authentication.
+
+        Args:
+            key: The user's key.
+            secret_auth: The user's secret authentication.
+
+        Returns:
+            A dictionary containing the API response.
+        """
+        params: Dict[str, str] = {"key": key, "auth": secret_auth}
         return self._send_request("delete", params)
 
-    def edit(self, key: str, auth: str, mac: str = None, time: str = None) -> dict:
-        params = {"key": key, "auth": auth}
+    def edit(self, key: str, auth: str, mac: Optional[str] = None, time: Optional[str] = None) -> Dict[str, str]:
+        """
+        Edit user information.
+
+        Args:
+            key: The user's key.
+            auth: The user's authentication.
+            mac: (Optional) The new MAC address.
+            time: (Optional) The new time.
+
+        Returns:
+            A dictionary containing the API response.
+        """
+        params: Dict[str, str] = {"key": key, "auth": auth}
         if mac:
             params["mac"] = mac
         if time:
             params["time"] = time
         return self._send_request("edit", params)
+
+auth = AuthSys()
+print(auth.register("60"))

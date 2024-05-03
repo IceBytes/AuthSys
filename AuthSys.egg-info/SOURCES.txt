@@ -1,0 +1,9 @@
+README.md
+setup.py
+AuthSys.egg-info/PKG-INFO
+AuthSys.egg-info/SOURCES.txt
+AuthSys.egg-info/dependency_links.txt
+AuthSys.egg-info/requires.txt
+AuthSys.egg-info/top_level.txt
+authsys/AuthSys.py
+authsys/__init__.py
