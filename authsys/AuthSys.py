@@ -724,6 +724,3 @@ class AuthSys():
         if time:
             params["time"] = time
         return self._send_request("edit", params)
-
-auth = AuthSys()
-print(auth.register("60"))
